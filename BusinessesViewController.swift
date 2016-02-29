@@ -12,6 +12,8 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
 
     var businesses: [Business]!
     var b_businesses: [Business]!
+    var searchBar : UISearchBar!
+    
     
     @IBOutlet weak var tableView: UITableView!
     override func viewDidLoad() {
@@ -35,21 +37,6 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
                 print(business.address!)
             }
         })
-        
-   func searchSearchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-            if searchText.isEmpty {
-                businesses = b_businesses
-            } else {
-                businesses = b_businesses?.filter({ (business: Business) -> Bool in
-                    if let name = business.name {
-                        return name.rangeOfString(searchText, options: .CaseInsensitiveSearch) != nil
-                    }
-                    return false
-                })
-                
-            }
-            tableView.reloadData()
-        }
 
 /* Example of Yelp search with more search options specified
         Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["asianfusion", "burgers"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
@@ -82,8 +69,14 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         cell.business = businesses[indexPath.row]
         return cell
     }
-
-
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        Business.searchWithTerm(searchText, completion: { (businesses: [Business]!, error: NSError!) -> Void in
+            self.businesses = businesses
+            self.b_businesses = self.businesses
+            self.tableView.reloadData()
+            
+        })
+    }
     /*
     // MARK: - Navigation
 
